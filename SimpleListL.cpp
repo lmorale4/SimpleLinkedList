@@ -5,61 +5,53 @@
 
 
 SimpleList::SimpleList(){
-  head = new Node;
+  head;
   last = head;
   size = 0;
 }
 
 SimpleList::~SimpleList(){
   cout << "SimpleList object is being destroyed."<< endl;
-  Node * temp = head;
+  Node * temp;
   for(int i=0; i<size; i++){
+		temp = head;
     head = head->next;
-    delete temp;
-    temp = head; 
+    delete temp; 
   }
-  delete last;
-
 }
 
 SimpleList::SimpleList(const SimpleList & listToCopy){
   head = new Node;
   head->data = listToCopy.head->data;
-  Node * thisSL = head;
   Node * copySL = listToCopy.head;
   for(int i=0; i<listToCopy.size; i++){
-    Node * temp = new Node;
-    thisSL->next = temp;
-    thisSL = thisSL->next;
+    last->next = new Node;
+    last = last->next;
     copySL = copySL->next;
-    thisSL->data = copySL->data;
-    
+    last->data = copySL->data;
   } 
-  last = thisSL;
   size = listToCopy.size;
 }
 
 SimpleList & SimpleList::operator=(const SimpleList & listToCopy){
   if(&listToCopy != this){
-    Node * temp = head;
+    Node * temp;
     for(int i=0; i<size; i++){
+			temp = head;
       head = head->next;
       delete temp;
-      temp = head;
+      
     }
-    delete last;
+		
     head = new Node;
     head->data = listToCopy.head->data;
-    Node * thisSL = head;
-    Node * copySL = listToCopy.head;
+    Node * copyTemp = listToCopy.head;
     for(int i=0; i<listToCopy.size; i++){
-      Node * temp = new Node;
-      thisSL->next = temp;
-      thisSL = thisSL->next;
-      copySL = copySL->next;
-      thisSL->data = copySL->data;
+      last->next = new Node;
+      last = last->next;
+      copyTemp = copyTemp->next;
+      last->data = copyTemp->data;
     }
-    last = thisSL;
     size = listToCopy.size; 
   }
 }
@@ -73,18 +65,23 @@ int SimpleList::listSize ()const{
 }
 
 void SimpleList::append (const ItemType & item){
-  last->data = item;
-  last->next = new Node;
-  last = last->next;
+	if(empty()){
+		head = new Node;
+		last = head;
+	}
+	else{
+		last->next = new Node;
+		last = last->next;
+	}
+	last->data = item;
   size++;
 }
 
 
 void SimpleList::insert (const ItemType & item, int position){
   assert(position >0 && position <= size+1);
-  if(size == 0 || position == size+1){
+  if(empty() || position == size+1){
       append(item);
-      size--;
   }
   else{
     Node * newNode = new Node;
@@ -103,8 +100,9 @@ void SimpleList::insert (const ItemType & item, int position){
       temp2->next = newNode;
       newNode->next = temp1;
     }
+		size++;
   }
-  size++;
+
 }
 
 ItemType SimpleList::retrieve (int position)const{
@@ -118,10 +116,10 @@ ItemType SimpleList::retrieve (int position)const{
 
 void SimpleList::remove (int position){
   assert (position > 0 && position <= size);
-  Node * temp1 = head;
-  if(size >1){
-    if(position ==1){
-      head = temp1->next; 
+  if(!empty()){
+		Node * temp1 = head;
+    if(position == 1){
+      head = head->next; 
     }
     else{
       Node * temp2;
@@ -130,24 +128,23 @@ void SimpleList::remove (int position){
         temp1 = temp1->next;
       }
       temp2->next = temp1->next;
+			if(position == size + 1){
+				last = temp2;
+			}
     }
+		delete temp1;
   }
-  delete temp1;
   size--;
 }
 
 void SimpleList::display (ostream & out) const{
-  Node * var;
-  for(int i = 0; i < size; i++){
-    if(i==0){
-      out << head->data << endl;
-      var = head->next;
-    }
-    else{
-      out << var->data << endl;
-      var = var->next;
-    } 
-  }
+	if(!empty()){
+		Node * var = head;
+		for(int i = 0; i < size; i++){
+			out << var->data << endl;
+			var = var->next;
+		}
+	}
 }
 
 void SimpleList::moveToStart(){
@@ -163,5 +160,5 @@ ItemType SimpleList::getItem() const{
 }
 
 bool SimpleList::pastTheEnd() const{
-  return cur == last;
+  return cur == last->next;
 }
