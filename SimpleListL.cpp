@@ -6,53 +6,59 @@
 
 SimpleList::SimpleList(){
   head;
-  last = head;
+  last;
+	cur;
   size = 0;
 }
 
 SimpleList::~SimpleList(){
-  cout << "SimpleList object is being destroyed."<< endl;
+  cout << "\nSimpleList object is being destroyed."<< endl;
   Node * temp;
   for(int i=0; i<size; i++){
 		temp = head;
     head = head->next;
-    delete temp; 
+    delete temp;
+		// cout << "temp next: " << temp->next <<endl;
   }
 }
 
 SimpleList::SimpleList(const SimpleList & listToCopy){
   head = new Node;
-  head->data = listToCopy.head->data;
+	last = head;
   Node * copySL = listToCopy.head;
-  for(int i=0; i<listToCopy.size; i++){
+	last->data = copySL->data;
+  for(int i=0; i<listToCopy.size - 1; i++){
     last->next = new Node;
     last = last->next;
     copySL = copySL->next;
-    last->data = copySL->data;
+		last->data = copySL->data;
   } 
   size = listToCopy.size;
 }
 
 SimpleList & SimpleList::operator=(const SimpleList & listToCopy){
   if(&listToCopy != this){
-    Node * temp;
-    for(int i=0; i<size; i++){
-			temp = head;
-      head = head->next;
-      delete temp;
-      
-    }
+		if(!empty()){
+			Node * temp;
+			for(int i=0; i<size; i++){
+				temp = head;
+				head = head->next;
+				delete temp;
+				
+			}
+		}
 		
     head = new Node;
-    head->data = listToCopy.head->data;
-    Node * copyTemp = listToCopy.head;
-    for(int i=0; i<listToCopy.size; i++){
-      last->next = new Node;
-      last = last->next;
-      copyTemp = copyTemp->next;
-      last->data = copyTemp->data;
-    }
-    size = listToCopy.size; 
+		last = head;
+		Node * copySL = listToCopy.head;
+		last->data = copySL->data;
+		for(int i=0; i<listToCopy.size - 1; i++){
+			last->next = new Node;
+			last = last->next;
+			copySL = copySL->next;
+			last->data = copySL->data;
+		} 
+		size = listToCopy.size; 
   }
 }
 
@@ -74,35 +80,51 @@ void SimpleList::append (const ItemType & item){
 		last = last->next;
 	}
 	last->data = item;
-  size++;
+	last->next = 0;
+	size++;
 }
 
 
 void SimpleList::insert (const ItemType & item, int position){
-  assert(position >0 && position <= size+1);
+  assert(position > 0 && position <= size+1);
   if(empty() || position == size+1){
       append(item);
   }
   else{
+		// cout << "\nhead before: " << head << endl;
+		// cout << "last before: " << last << endl;
     Node * newNode = new Node;
     newNode->data = item;
+		// cout << "\nnewNode before data: " << newNode << endl;
     Node * temp1 = head;
+		// cout << "temp1 before data: " << temp1 << endl;
     if(position == 1){
       head = newNode;
-      head->next = temp1;      
+      head->next = temp1;
+			// cout << "head after data: " << head << endl;
+			// cout << "head next data: " << head->next << endl;
+
     }
     else{
       Node * temp2;
       for(int i = 1; i < position; i++){
-       temp2 = temp1;
-       temp1 = temp1->next;
+        temp2 = temp1;
+        temp1 = temp1->next;
+			  // cout << "\ntemp2 during data: " << temp2 << endl;
+				// cout << "temp1 during data: " << temp1 << endl;
       }
       temp2->next = newNode;
       newNode->next = temp1;
+			// cout << "\ntemp2->next after data: " << temp2->next << endl;
+			// cout << "newNode->next after data: " << newNode->next << endl;
     }
 		size++;
   }
-
+	// cout << "\ninsert head: " << head->data << endl;
+	// if(head->next){cout << "insert next: " << head->next->data << endl;}
+	// cout << "insert last: " << last->data << endl;
+	// cout << "last next: " << last->next << endl;
+	// cout << "size: " << size << endl;
 }
 
 ItemType SimpleList::retrieve (int position)const{
@@ -128,7 +150,7 @@ void SimpleList::remove (int position){
         temp1 = temp1->next;
       }
       temp2->next = temp1->next;
-			if(position == size + 1){
+			if(position == size){
 				last = temp2;
 			}
     }
@@ -152,13 +174,22 @@ void SimpleList::moveToStart(){
 }
 
 void SimpleList::next(){
+	// cout << "cur->next: " << cur->next << endl;
   cur = cur->next;
 }
 
 ItemType SimpleList::getItem() const{
+	// cout << "\nhead: " << head << endl;
+	// cout << "next: " << head->next << endl;
+	// cout << "next: " << head->next->next << endl;
+	// cout << "last: " << last << endl;
+	// cout << "last next: " << last->next << endl;
+	// cout << "cur: " << cur << endl;
   return cur->data;
 }
 
 bool SimpleList::pastTheEnd() const{
+	// last->next = 0;
+	// cout << "last->next: " << last->next << endl;
   return cur == last->next;
 }
